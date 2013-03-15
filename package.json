@@ -1,0 +1,13 @@
+{
+	"name": "botfi",
+	"version": "0.0.1",
+	"author": "Peter Brandt <peter.m.brandt@gmail.com>",
+	"description": "Use MySql in Node.js with Ease and Joy",
+	"private": "true",
+	"main": "botfi.js",
+	"dependencies": {
+		"mysql": "*",
+		"q": "*"
+	},
+	"license": "MIT"
+}
