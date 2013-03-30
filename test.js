@@ -1,56 +1,69 @@
 Q = require("q");
 
+/* 
+ * Define functions which return promises.  These will be used to test
+ */
 
-delay = function(ms) {
-	var deferred = Q.defer();
-	setTimeout(function() {
-		console.log('delay over');
-		deferred.resolve();
-	}, ms);
-	return deferred.promise;
-}
-
-a = [];
-
-a.push('Dear Sir, ');
-
-delayText = function(t, ms) {
-	setTimeout(function(){
+// Returns just a promise with a string value
+textPromise = function(t) {
+	return Q.fcall(function() {
 		return t;
-	}, ms);
+	})
 }
 
+// Returns a promise with a string value which is automatically resolved
+// after a ms milliseconds
 delayTextPromise = function(t, ms) {
-	deferred = Q.defer();
+	var p = textPromise(t);
 	setTimeout(function() {
-		deferred.resolve();
+		p.done();
 	}, ms);
-	return deferred.promise;
+	return p;
 }
 
 
-// array of promises
-ap = [];
-
-// holds the text.  
+/* 
+ * Define the internals of the promise-bound stringbuilder
+ */
+ 
 /*
-  array of objects with the form 
+  text = [] array of objects with the form 
 	{
 		text, 
 		position, 
 		promise,
 		internalPromise
 	}
-
 */
 var text = [];
+
 // current position in the array
 var i = 0
 
-var ilock = 0;
+var ilock = 0; // locking not implemented (single-threaded so far)
 
-//var textPromise = Q.promise();
+// function which either adds plaintext or a promise-bound value to the
+// text array
+function Append(t) {
+	// if it's a string, just add it inline
+	if (typeof t === 'string'
+		  || typeof t === 'number') {
+		addText(t);
+	} 
+	// deferred
+	else if (typeof t.promise === 'object') {
+		addTextPromise(t.promise);
+	}
+	// straight-up promise
+	else if (typeof t.done === 'function') {
+		addTextPromise(t);
+	}
+	else {
+		console.log('unhandled object');
+	}
+}
 
+// Adds text w/o promise. Useful for statically defined text
 function addText(t) {
 	text.push({
 		"text": t,
@@ -59,7 +72,7 @@ function addText(t) {
 	i++; // PMB race condition if multithreaded
 }
 
-
+// Adds the text which is returned by a promise
 function addTextPromise(p) {
 	text.push({
 		"position": i,
@@ -75,29 +88,27 @@ function addTextPromise(p) {
 	});
 }
 
-teepee = function(t) {
-	return Q.fcall(function() {
-		return t
-	})
-}
-
-
-addText('Starting this string builder');
-addText('Continuing this string builder');
-p1 = teepee('I PROMISE I will deliver this text');
-addTextPromise(p1);
-addText('Continuing this string builder... again!');
-p1.then(function() {
-	console.log('p1 is done');
-	printText();
-});
-
-
+// Prints the built string
 function printText() {
 	text.forEach(function(o, p) {
 		console.log(o.text);
 	})
 }
-printText();
 
+/*
+ * Test it out
+ */
+
+Append('Starting this string builder');
+Append('Continuing this string builder');
+p1 = textPromise('I PROMISE I will deliver this text');
+Append(p1);
+Append('Continuing this string builder... again!');
+printText(); // should print undefined in the third line
+
+// try it after a promise is done
+p1.then(function() {
+	console.log('p1 is done');
+	printText();
+});
 p1.done();
