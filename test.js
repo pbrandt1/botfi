@@ -67,19 +67,19 @@ function Append(t) {
 function addText(t) {
 	text.push({
 		"text": t,
-		"position": i
+		"position": i++
 	});
-	i++; // PMB race condition if multithreaded
 }
 
 // Adds the text which is returned by a promise
 function addTextPromise(p) {
+	var me = this;
 	text.push({
-		"position": i,
+		"position": i++,
 		"promise": p
 	});
-	i++;
 	p.then(function(value) {
+		console.log(me.p);
 		text.forEach(function(o, pos) {
 			if (o.promise && o.promise === p){
 				o.text = value;
@@ -104,6 +104,9 @@ Append('Continuing this string builder');
 p1 = textPromise('I PROMISE I will deliver this text');
 Append(p1);
 Append('Continuing this string builder... again!');
+
+console.log(text);
+
 printText(); // should print undefined in the third line
 
 // try it after a promise is done
