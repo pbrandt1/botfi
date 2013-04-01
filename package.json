@@ -1,13 +1,27 @@
 {
 	"name": "botfi",
 	"version": "0.0.1",
-	"author": "Peter Brandt <peter.m.brandt@gmail.com>",
+  "homepage": "https://github.com/iondrive/botfi",
 	"description": "Use MySql in Node.js with Ease and Joy",
+	"author": "Peter Brandt <peter.m.brandt@gmail.com>",
+	"keywords": [
+		"botfi",
+		"q",
+		"stringbuilder",
+		"sql",
+		"promise",
+		"promises",
+		"mysql",
+		"sql-server"
+	],
 	"private": "true",
 	"main": "botfi.js",
 	"dependencies": {
 		"mysql": "*",
 		"q": "*"
+	},
+	"devDependencies": {
+		"qunit": "*"
 	},
 	"license": "MIT"
 }
