@@ -1,4 +1,5 @@
 // botfi.js, the main file
+sb = require('./lib/stringbuilder.js').stringbuilder;
 botfi = {};
 
 
@@ -6,4 +7,4 @@ botfi = {};
 
 
 // exports
-exports.botfi = botfi;
+exports.stringBuilder = sb;

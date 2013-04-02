@@ -1,17 +1,20 @@
-// sample of what a traditional (ciq-style) sql builder would look like
-// It looks synchronous, but it could be bound with promises internally
-// the getJSON() method could return a q promise
+// sample of what a c#- or java-style sql builder would look like
+// It handles static values and promises.  
 
 botfi = require('botfi');
 screening = require('screening');
-screening.data.prime = botfi.connect(capitalIQ.data.primeConnection);
+// Assume screening.data.primeConnection is an object containing the basic
+// database connection parameters like username and catalog etc
+screening.data.prime = botfi.connect(screening.data.primeConnection);
 
-// initialization
+// initialization.  Default sql format.  
 var sql = botfi.sql();
 
 // Select columns
 sql.selectItems.push('companyId');
 sql.selectItems.push('c.companyNamePlus as name');
+// can add a promise which will add one or more columns
+sql.selectItems.push(getUsersAdditionalColumns());
 sql.selectItems.push({
 	tableAlias: 'fi',
 	column: 'dataItemValue',
@@ -45,14 +48,17 @@ sql.joins.push({
 	'hints': ['nolock'],
 	'nolock': true
 });
+// dynamic switching of join types
 sql.joins.get('i').type = botfi.joins.leftOuter;
 sql.selectItems.push('i.investmentType');
 
-// Add where clauses
-sql.where.push({
-	'alias': 'i',
+// Add where clauses.  getSecurityClause() returns a promise
+sql.where.push(getSecurityClause());
 
-// Get data
-// let's imagine the user has a promise called 'getMyShit'
-sql.getJSON().then(getMyShit.resolve())
+// Get data and apply it elsewhere
+// sql.getJSON is shorthand for sql.then(function(value) { getJSON(....
+sql.getJSON(screening.data.prime)
+.then(function(value) {
+	applyToTemplate(value, screening.templates.results)
+});
 

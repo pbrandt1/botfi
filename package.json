@@ -21,7 +21,8 @@
 		"q": "*"
 	},
 	"devDependencies": {
-		"qunit": "*"
+		"qunit": "*",
+		"nodeunit": "*"
 	},
 	"license": "MIT"
 }
