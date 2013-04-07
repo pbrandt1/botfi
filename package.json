@@ -21,8 +21,10 @@
 		"q": "*"
 	},
 	"devDependencies": {
-		"qunit": "*",
-		"nodeunit": "*"
+		"nodeunit": "*",
+		"jquery": "*",
+		"rsvp": "*",
+		"when": "*"
 	},
 	"license": "MIT"
 }
