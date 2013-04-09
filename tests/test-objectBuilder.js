@@ -1,6 +1,8 @@
-json_init = require('../lib/jsonBuilder.js').json_init;
+json_init = require('../lib/objectBuilder.js').json_init;
 q = require('q');
 jQuery = require('jquery');
+rsvp = require('rsvp');
+when = require('when');
 
 s = 'A Song of Ice and Fire';
 ss = '\ud834\udd1e clef';
@@ -85,6 +87,41 @@ module.exports = {
 		setTimeout(function() {
 			d.resolve('I promise to deliver this text');
 		}, 100);
+		json.then(function(value) {
+			test.ok(objectEquals(value, {s:s, n:n, a:a, o:o, p:'I promise to deliver this text'}));
+			test.done();
+		});
+	},
+	"add an RSVP promise": function(test) {
+		test.expect(1);
+		var json = json_init();
+		json.s = s;
+		json.n = n;
+		json.a = a;
+		json.o = o;
+		var p = new rsvp.Promise(function(resolve, reject) {
+			setTimeout(function() {
+				resolve('I promise to deliver this text');
+			}, 100);
+		});
+		json.p = p;
+		json.then(function(value) {
+			test.ok(objectEquals(value, {s:s, n:n, a:a, o:o, p:'I promise to deliver this text'}));
+			test.done();
+		});
+	},
+	"add a when.js promise": function(test) {
+		test.expect(1);
+		var json = json_init();
+		json.s = s;
+		json.n = n;
+		json.a = a;
+		json.o = o;
+		var d = when.defer();
+		setTimeout(function() {
+				d.resolve('I promise to deliver this text');
+		}, 100);
+		json.p = d.promise;
 		json.then(function(value) {
 			test.ok(objectEquals(value, {s:s, n:n, a:a, o:o, p:'I promise to deliver this text'}));
 			test.done();
